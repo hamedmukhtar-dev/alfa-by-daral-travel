@@ -1,31 +1,32 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import settings
-from app.db import init_db
 from app.core.logging_config import setup_logging
-from app.core.middleware import add_correlation_middleware
-from app.core.exceptions import register_exception_handlers
+from app.core.middleware import RequestLoggingMiddleware
 
-# Routers
 from app.routers.auth import router as auth_router
 from app.routers.wallet import router as wallet_router
-from app.routers.services import router as services_router
+from app.routers.service_request import router as service_router
+from app.routers.services import router as ai_service_router  # AI Intent Router
 
-# AI Engine
-from app.ai.intent_router import intent_router
+from app.db import engine, Base
+import logging
 
 
+# -----------------------------
+# Initialize App
+# -----------------------------
 def create_app() -> FastAPI:
-    """Factory to build the ALFA backend application."""
-
     setup_logging()
 
     app = FastAPI(
-        title="ALFA by Daral Travel",
+        title="ALFA — Unified AI Travel & Services Platform",
         version="1.0.0",
-        description="Unified AI Travel & Services Distribution Platform"
+        description="Backend API for ALFA by Daral Travel"
     )
+
+    # Middleware
+    app.add_middleware(RequestLoggingMiddleware)
 
     # CORS
     app.add_middleware(
@@ -36,17 +37,15 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # Correlation IDs
-    add_correlation_middleware(app)
-
-    # Exceptions
-    register_exception_handlers(app)
-
     # Routers
     app.include_router(auth_router, prefix="/auth", tags=["Auth"])
     app.include_router(wallet_router, prefix="/wallet", tags=["Wallet"])
-    app.include_router(services_router, prefix="/services", tags=["Services"])
-    app.include_router(intent_router, prefix="/ai", tags=["AI Engine"])
+    app.include_router(service_router, prefix="/services", tags=["Service Requests"])
+    app.include_router(ai_service_router, prefix="/ai", tags=["AI Intent Engine"])
+
+    @app.get("/")
+    async def root():
+        return {"message": "ALFA Backend Running Successfully 🚀"}
 
     return app
 
@@ -54,15 +53,12 @@ def create_app() -> FastAPI:
 app = create_app()
 
 
-@app.on_event("startup")
-async def on_startup():
-    await init_db()
-    print("🚀 ALFA Backend Started Successfully")
+# -----------------------------
+# Database Setup
+# -----------------------------
+async def init_db():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
-
-@app.get("/")
-async def root():
-    return {
-        "message": "Welcome to ALFA by Daral Travel",
-        "status": "running"
-    }
+import asyncio
+asyncio.run(init_db())
