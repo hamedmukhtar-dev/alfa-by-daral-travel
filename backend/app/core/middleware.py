@@ -1,3 +1,5 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
@@ -5,6 +7,7 @@ import time
 import logging
 
 logger = logging.getLogger("alfa.middleware")
+
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
     """
@@ -21,3 +24,20 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         )
 
         return response
+
+
+def setup_middleware(app: FastAPI):
+    """
+    Register global middlewares (CORS + Logging).
+    """
+    # CORS
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # Request logging
+    app.add_middleware(RequestLoggingMiddleware)
