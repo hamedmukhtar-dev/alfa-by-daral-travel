@@ -2,19 +2,16 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "ALFA by Daral Travel"
-    ENV: str = "dev"
+    # App
+    APP_NAME: str = "ALFA by Daral Travel"
+    APP_ENV: str = "development"
 
-    # DB
-    DATABASE_URL: str = "sqlite+aiosqlite:///./alfa.db"
-
-    # SECURITY
-    JWT_SECRET_KEY: str = "CHANGE_ME_IN_ENV"
+    # Security
+    JWT_SECRET: str = "CHANGE_ME_IN_PRODUCTION"
     JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
 
-    # OpenAI (AI Layer)
-    OPENAI_API_KEY: str | None = None
+    # Database (PostgreSQL مثال)
+    DATABASE_URL: str = "sqlite+aiosqlite:///./alfa.db"
 
     class Config:
         env_file = ".env"
