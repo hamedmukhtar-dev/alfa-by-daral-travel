@@ -62,3 +62,5 @@ async def init_db():
 
 import asyncio
 asyncio.run(init_db())
+from app.routers import service_request
+app.include_router(service_request.router, prefix="/api/requests", tags=["Service Requests"])
