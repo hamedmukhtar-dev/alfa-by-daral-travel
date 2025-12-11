@@ -1,27 +1,26 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, func
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from app.db import Base
 
 
 class ServiceRequest(Base):
     __tablename__ = "service_requests"
 
     id = Column(Integer, primary_key=True, index=True)
-    category = Column(String, index=True)       # delivery, travel, medicine, cargo, service
-    title = Column(String)
+
+    category = Column(String, index=True)  # delivery, travel, medicine, cargo, etc.
+    title = Column(String, nullable=False)
     description = Column(String, nullable=True)
 
     user_name = Column(String, nullable=True)
-    user_phone = Column(String)
+    user_phone = Column(String, nullable=False)
 
     city_from = Column(String, nullable=True)
     city_to = Column(String, nullable=True)
 
     price_offer = Column(Float, nullable=True)
 
-    status = Column(String, default="pending")  # pending, in_progress, completed, canceled
-    assigned_to = Column(String, nullable=True)
+    status = Column(String, default="pending")   # pending, in_progress, completed, canceled
+    assigned_to = Column(String, nullable=True)  # agent / company name
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
