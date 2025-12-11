@@ -12,7 +12,6 @@ from app.routers.ai import router as ai_router
 from app.routers.travel import router as travel_router
 
 from app.db import engine, Base
-import asyncio
 
 
 def create_app() -> FastAPI:
@@ -42,15 +41,13 @@ def create_app() -> FastAPI:
             "status": "ok",
         }
 
+    @app.on_event("startup")
+    async def on_startup():
+        # Initialize database tables
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+
     return app
 
 
 app = create_app()
-
-
-async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-
-asyncio.run(init_db())
