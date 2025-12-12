@@ -22,6 +22,7 @@ from app.routers.reports import router as reports_router
 from app.routers.weekly_report import router as weekly_report_router
 from app.routers.feedback import router as feedback_router
 from app.routers.feedback_analytics import router as feedback_analytics_router
+from app.routers.alerts import router as alerts_router   # 🔥 NEW
 
 # --------------------
 # Agent Flow
@@ -73,6 +74,7 @@ def create_app() -> FastAPI:
     app.include_router(weekly_report_router)
     app.include_router(feedback_router)
     app.include_router(feedback_analytics_router)
+    app.include_router(alerts_router)   # 🚨 Alerts API
 
     # Agent Operations
     app.include_router(agent_requests_router)
