@@ -1,5 +1,5 @@
-import PilotBanner from "@/app/components/PilotBanner";
 import Footer from "@/app/components/Footer";
+import PilotBanner from "@/app/components/PilotBanner";
 
 export default function RootLayout({
   children,
@@ -7,7 +7,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ar">
+    <html lang="en">
       <body style={{ margin: 0, fontFamily: "sans-serif" }}>
         <PilotBanner />
         {children}
