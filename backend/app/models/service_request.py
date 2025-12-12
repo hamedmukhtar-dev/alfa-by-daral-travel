@@ -17,19 +17,21 @@ class ServiceRequest(Base):
 
     listing_id = Column(Integer, ForeignKey("service_listings.id"), nullable=True)
     provider_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    source = Column(String, default="manual")  # free_api | supplier | manual
+    source = Column(String, default="manual")
 
     city_from = Column(String, nullable=True)
     city_to = Column(String, nullable=True)
 
     price_offer = Column(Float, nullable=True)
 
-    # 🔥 AI Intent Scoring
-    intent_score = Column(String, default="medium")  
-    # high | medium | low
+    intent_score = Column(String, default="medium")  # high | medium | low
 
     status = Column(String, default="pending")
     assigned_to = Column(String, nullable=True)
+
+    # 🔒 Soft Lock (Agent Claim)
+    claimed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    claimed_at = Column(DateTime(timezone=True), nullable=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
