@@ -1,46 +1,38 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
 
-# -----------------------------
-# Base Schema
-# -----------------------------
-class ServiceRequestBase(BaseModel):
-    category: str = Field(..., example="delivery")
-    title: str = Field(..., example="Send package from A to B")
-    description: Optional[str] = Field(None, example="Fragile items")
-    user_name: Optional[str] = Field(None, example="Hamed")
-    user_phone: str = Field(..., example="+249912345678")
-    city_from: Optional[str] = Field(None)
-    city_to: Optional[str] = Field(None)
+class ServiceRequestCreate(BaseModel):
+    category: str
+    title: str
+    description: Optional[str] = None
+    user_name: Optional[str] = None
+    user_phone: str
+    city_from: Optional[str] = None
+    city_to: Optional[str] = None
     price_offer: Optional[float] = None
 
 
-# -----------------------------
-# Create Request (Public)
-# -----------------------------
-class ServiceRequestCreate(ServiceRequestBase):
-    pass
-
-
-# -----------------------------
-# Update (Admin only)
-# -----------------------------
 class ServiceRequestUpdate(BaseModel):
-    status: Optional[str] = Field(None, example="in_progress")
-    assigned_to: Optional[str] = Field(None, example="Agent-214")
+    status: Optional[str] = None
+    assigned_to: Optional[str] = None
 
 
-# -----------------------------
-# Response Model
-# -----------------------------
-class ServiceRequestResponse(ServiceRequestBase):
+class ServiceRequestResponse(BaseModel):
     id: int
+    category: str
+    title: str
+    description: Optional[str]
+    user_name: Optional[str]
+    user_phone: str
+    city_from: Optional[str]
+    city_to: Optional[str]
+    price_offer: Optional[float]
+    intent_score: str
     status: str
     assigned_to: Optional[str]
     created_at: datetime
-    updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
