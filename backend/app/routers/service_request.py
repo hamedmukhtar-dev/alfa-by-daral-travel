@@ -11,10 +11,14 @@ from app.schemas.service_request import (
 from app.models.service_request import ServiceRequest
 from app.core.security import get_current_user
 from app.ai.intent_scoring import score_intent
+from app.core.notifications import notify_high_intent  # 🔔 NEW
 
 router = APIRouter(prefix="/requests", tags=["Service Requests"])
 
 
+# -----------------------------------
+# CREATE service request
+# -----------------------------------
 @router.post("/", response_model=ServiceRequestResponse)
 async def create_service_request(
     request_data: ServiceRequestCreate,
@@ -22,6 +26,7 @@ async def create_service_request(
 ):
     payload = request_data.dict()
 
+    # 🧠 AI Intent Scoring
     intent = score_intent(payload)
 
     new_request = ServiceRequest(
@@ -32,9 +37,17 @@ async def create_service_request(
     db.add(new_request)
     await db.commit()
     await db.refresh(new_request)
+
+    # 🔔 Notify admin if HIGH intent (Pilot-safe)
+    if intent == "high":
+        await notify_high_intent(new_request)
+
     return new_request
 
 
+# -----------------------------------
+# LIST requests (Admin only)
+# -----------------------------------
 @router.get("/", response_model=List[ServiceRequestResponse])
 async def list_requests(
     db: AsyncSession = Depends(get_db),
@@ -57,6 +70,9 @@ async def list_requests(
     return result.fetchall()
 
 
+# -----------------------------------
+# UPDATE request status (Admin)
+# -----------------------------------
 @router.put("/{request_id}", response_model=ServiceRequestResponse)
 async def update_request_status(
     request_id: int,
