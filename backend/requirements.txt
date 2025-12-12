@@ -1,8 +1,9 @@
 fastapi
-uvicorn
-sqlalchemy>=2.0
-aiosqlite
+uvicorn[standard]
+sqlalchemy
+asyncpg
+python-jose
+passlib[bcrypt]
 pydantic
 python-dotenv
-openai
-passlib[bcrypt]
+httpx
