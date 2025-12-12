@@ -20,6 +20,9 @@ from app.routers.agent_claim import router as agent_claim_router
 from app.routers.supplier_listings import router as supplier_listings_router
 from app.routers.public_listings import router as public_listings_router
 
+# 🔥 FEEDBACK + AI
+from app.routers.feedback import router as feedback_router
+
 from app.db import engine, Base
 
 
@@ -55,6 +58,9 @@ def create_app() -> FastAPI:
     # 🧩 Marketplace
     app.include_router(supplier_listings_router)
     app.include_router(public_listings_router)
+
+    # 🗣️ Feedback + AI
+    app.include_router(feedback_router)
 
     # --------------------
     # System Endpoints
