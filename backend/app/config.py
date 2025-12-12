@@ -1,20 +1,29 @@
-from pydantic import BaseSettings
+import os
 
 
-class Settings(BaseSettings):
-    # App
-    APP_NAME: str = "ALFA by Daral Travel"
-    APP_ENV: str = "development"
+class Settings:
+    # --------------------
+    # Core
+    # --------------------
+    APP_ENV = os.getenv("APP_ENV", "pilot")  # pilot | production
+    PILOT_MODE = APP_ENV == "pilot"
 
-    # Security
-    JWT_SECRET: str = "CHANGE_ME_IN_PRODUCTION"
-    JWT_ALGORITHM: str = "HS256"
+    # --------------------
+    # Pilot Controls
+    # --------------------
+    ENABLE_FREE_SERVICES = os.getenv("ENABLE_FREE_SERVICES", "true").lower() == "true"
+    ENABLE_OFFLINE_PAYMENTS = os.getenv("ENABLE_OFFLINE_PAYMENTS", "true").lower() == "true"
 
-    # Database (PostgreSQL مثال)
-    DATABASE_URL: str = "sqlite+aiosqlite:///./alfa.db"
+    # --------------------
+    # Safety
+    # --------------------
+    MAX_OFFLINE_PAYMENT_AMOUNT = float(os.getenv("MAX_OFFLINE_PAYMENT_AMOUNT", "1000"))
+    REQUIRE_ADMIN_APPROVAL = True
 
-    class Config:
-        env_file = ".env"
+    # --------------------
+    # Info
+    # --------------------
+    PLATFORM_NAME = "ALFA by Daral Travel"
 
 
 settings = Settings()
