@@ -16,18 +16,45 @@ type Request = {
   status: string;
 };
 
+const order: Record<string, number> = {
+  high: 1,
+  medium: 2,
+  low: 3,
+};
+
 export default function RequestsPage() {
   const [requests, setRequests] = useState<Request[]>([]);
+  const [filter, setFilter] = useState<"" | "high" | "medium" | "low">("");
 
   useEffect(() => {
-    api.get("/requests").then((res) => setRequests(res.data));
+    api.get("/requests").then((res) => {
+      const sorted = res.data.sort(
+        (a: Request, b: Request) =>
+          order[a.intent_score] - order[b.intent_score]
+      );
+      setRequests(sorted);
+    });
   }, []);
+
+  const visible = filter
+    ? requests.filter((r) => r.intent_score === filter)
+    : requests;
 
   return (
     <main style={{ padding: 20 }}>
       <h1>طلبات الخدمات</h1>
 
-      {requests.map((r) => (
+      {/* Filters */}
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => setFilter("")}>الكل</button>{" "}
+        <button onClick={() => setFilter("high")}>🔴 الجادة</button>{" "}
+        <button onClick={() => setFilter("medium")}>🟡 المتوسطة</button>{" "}
+        <button onClick={() => setFilter("low")}>⚪ استفسارات</button>
+      </div>
+
+      {visible.length === 0 && <p>لا توجد طلبات</p>}
+
+      {visible.map((r) => (
         <div
           key={r.id}
           style={{
