@@ -14,7 +14,11 @@ from app.routers.offline_payments import router as offline_payments_router
 from app.routers.reports import router as reports_router
 from app.routers.weekly_report import router as weekly_report_router
 from app.routers.agent_requests import router as agent_requests_router
-from app.routers.agent_claim import router as agent_claim_router  # ✅ CLAIM FLOW
+from app.routers.agent_claim import router as agent_claim_router
+
+# 🔥 SUPPLIER + PUBLIC
+from app.routers.supplier_listings import router as supplier_listings_router
+from app.routers.public_listings import router as public_listings_router
 
 from app.db import engine, Base
 
@@ -41,10 +45,16 @@ def create_app() -> FastAPI:
     app.include_router(ai_router)
     app.include_router(travel_router)
     app.include_router(offline_payments_router)
+
     app.include_router(reports_router)
-    app.include_router(weekly_report_router)   # Weekly ops report
-    app.include_router(agent_requests_router)  # Agent view
-    app.include_router(agent_claim_router)     # Agent claim (soft lock)
+    app.include_router(weekly_report_router)
+
+    app.include_router(agent_requests_router)
+    app.include_router(agent_claim_router)
+
+    # 🧩 Marketplace
+    app.include_router(supplier_listings_router)
+    app.include_router(public_listings_router)
 
     # --------------------
     # System Endpoints
