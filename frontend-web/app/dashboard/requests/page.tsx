@@ -1,81 +1,95 @@
 "use client";
 
-import { useState } from "react";
-import { api } from "@/lib/api";
+import { useEffect, useState } from "react";
+import { api } from "@/app/lib/api";
+import ConfirmAction from "@/app/components/ConfirmAction";
+
+type Request = {
+  id: number;
+  service_type: string;
+  status: string;
+  user_id: number;
+};
 
 export default function RequestsPage() {
-  const [serviceType, setServiceType] = useState("");
-  const [details, setDetails] = useState("");
-  const [requestId, setRequestId] = useState<number | null>(null);
-  const [method, setMethod] = useState("cash");
-  const [reference, setReference] = useState("");
-  const [message, setMessage] = useState("");
+  const [data, setData] = useState<Request[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const createRequest = async () => {
-    // Demo request creation (replace with real API if needed)
-    setRequestId(1);
-    setMessage("Service request created. Please confirm offline payment.");
-  };
-
-  const submitOfflinePayment = async () => {
+  const load = async () => {
+    setLoading(true);
     try {
-      await api.post("/offline-payments/submit", {
-        service_request_id: requestId,
-        payment_method: method,
-        reference_note: reference,
-      });
-      setMessage("Offline payment submitted successfully.");
-    } catch (err) {
-      setMessage("Error submitting offline payment.");
+      const res = await api.get("/service-requests");
+      setData(res.data);
+    } catch (e) {
+      alert("Failed to load requests");
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    load();
+  }, []);
+
+  const approve = async (id: number) => {
+    await api.post("/admin/service-requests/approve", { request_id: id });
+    await load();
+  };
+
+  const reject = async (id: number) => {
+    await api.post("/admin/service-requests/reject", {
+      request_id: id,
+      reason: "Rejected by admin",
+    });
+    await load();
+  };
+
+  if (loading) return <div style={{ padding: 20 }}>Loading…</div>;
+
   return (
-    <main>
-      <h3>Create Service Request</h3>
+    <div style={{ padding: 20 }}>
+      <h2 style={{ marginBottom: 12 }}>Service Requests (Pilot)</h2>
 
-      <input
-        placeholder="Service Type"
-        value={serviceType}
-        onChange={(e) => setServiceType(e.target.value)}
-      />
-      <br /><br />
+      {data.length === 0 && <p>No requests</p>}
 
-      <textarea
-        placeholder="Details"
-        value={details}
-        onChange={(e) => setDetails(e.target.value)}
-      />
-      <br /><br />
+      {data.map((r) => (
+        <div
+          key={r.id}
+          style={{
+            border: "1px solid #ddd",
+            padding: 12,
+            marginBottom: 8,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <strong>#{r.id}</strong> — {r.service_type}  
+            <div style={{ fontSize: 12, color: "#555" }}>
+              Status: {r.status}
+            </div>
+          </div>
 
-      <button onClick={createRequest}>Create Request</button>
-
-      {requestId && (
-        <>
-          <hr />
-          <h4>Confirm Offline Payment</h4>
-
-          <select value={method} onChange={(e) => setMethod(e.target.value)}>
-            <option value="cash">Cash</option>
-            <option value="bank">Bank Transfer</option>
-            <option value="agent">Agent</option>
-          </select>
-          <br /><br />
-
-          <input
-            placeholder="Reference / Note"
-            value={reference}
-            onChange={(e) => setReference(e.target.value)}
-          />
-          <br /><br />
-
-          <button onClick={submitOfflinePayment}>
-            Submit Offline Payment
-          </button>
-        </>
-      )}
-
-      {message && <p style={{ marginTop: 20 }}>{message}</p>}
-    </main>
+          {r.status === "pending" ? (
+            <div style={{ display: "flex", gap: 8 }}>
+              <ConfirmAction
+                label="Approve"
+                onConfirm={() => approve(r.id)}
+              />
+              <ConfirmAction
+                label="Reject"
+                danger
+                onConfirm={() => reject(r.id)}
+              />
+            </div>
+          ) : (
+            <span style={{ fontSize: 12, color: "#999" }}>
+              Processed
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
   );
 }
