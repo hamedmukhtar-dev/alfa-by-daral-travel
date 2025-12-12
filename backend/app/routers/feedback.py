@@ -7,6 +7,7 @@ from app.models.feedback import Feedback
 from app.schemas.feedback import FeedbackCreate, FeedbackResponse
 from app.core.security import get_current_user
 from app.ai.feedback_analyzer import analyze_feedback
+from app.core.alerts import create_alert
 
 router = APIRouter(prefix="/feedback", tags=["Feedback"])
 
@@ -30,6 +31,17 @@ async def submit_feedback(
     db.add(item)
     await db.commit()
     await db.refresh(item)
+
+    # 🚨 Automation: High-risk feedback
+    if item.ai_priority == "high" or item.ai_category == "risk":
+        await create_alert(
+            db=db,
+            type="feedback_high_risk",
+            severity="critical",
+            message="High-risk feedback detected",
+            source_id=item.id,
+        )
+
     return item
 
 
