@@ -11,7 +11,8 @@ from app.routers.admin import router as admin_router
 from app.routers.ai import router as ai_router
 from app.routers.travel import router as travel_router
 from app.routers.offline_payments import router as offline_payments_router
-from app.routers.reports import router as reports_router  # ✅ NEW
+from app.routers.reports import router as reports_router
+from app.routers.weekly_report import router as weekly_report_router  # 🔥 NEW
 
 from app.db import engine, Base
 
@@ -38,7 +39,8 @@ def create_app() -> FastAPI:
     app.include_router(ai_router)
     app.include_router(travel_router)
     app.include_router(offline_payments_router)
-    app.include_router(reports_router)  # ✅ STEP 5
+    app.include_router(reports_router)
+    app.include_router(weekly_report_router)  # ✅ WEEKLY REPORT
 
     # --------------------
     # System Endpoints
@@ -58,4 +60,11 @@ def create_app() -> FastAPI:
     # Startup
     # --------------------
     @app.on_event("startup")
-    async def on
+    async def on_startup():
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+
+    return app
+
+
+app = create_app()
