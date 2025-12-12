@@ -10,6 +10,7 @@ from app.routers.service_request import router as service_router
 from app.routers.admin import router as admin_router
 from app.routers.ai import router as ai_router
 from app.routers.travel import router as travel_router
+from app.routers.offline_payments import router as offline_payments_router
 
 from app.db import engine, Base
 
@@ -33,6 +34,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_router)
     app.include_router(ai_router)
     app.include_router(travel_router)
+    app.include_router(offline_payments_router)
 
     @app.get("/")
     async def root():
@@ -41,9 +43,12 @@ def create_app() -> FastAPI:
             "status": "ok",
         }
 
+    @app.get("/health")
+    async def health():
+        return {"status": "healthy"}
+
     @app.on_event("startup")
     async def on_startup():
-        # Initialize database tables
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
