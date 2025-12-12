@@ -11,6 +11,7 @@ from app.routers.admin import router as admin_router
 from app.routers.ai import router as ai_router
 from app.routers.travel import router as travel_router
 from app.routers.offline_payments import router as offline_payments_router
+from app.routers.reports import router as reports_router  # ✅ NEW
 
 from app.db import engine, Base
 
@@ -26,7 +27,9 @@ def create_app() -> FastAPI:
 
     setup_middleware(app)
 
+    # --------------------
     # Routers
+    # --------------------
     app.include_router(auth_router)
     app.include_router(users_router)
     app.include_router(wallet_router)
@@ -35,7 +38,11 @@ def create_app() -> FastAPI:
     app.include_router(ai_router)
     app.include_router(travel_router)
     app.include_router(offline_payments_router)
+    app.include_router(reports_router)  # ✅ STEP 5
 
+    # --------------------
+    # System Endpoints
+    # --------------------
     @app.get("/")
     async def root():
         return {
@@ -47,12 +54,8 @@ def create_app() -> FastAPI:
     async def health():
         return {"status": "healthy"}
 
+    # --------------------
+    # Startup
+    # --------------------
     @app.on_event("startup")
-    async def on_startup():
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-
-    return app
-
-
-app = create_app()
+    async def on
