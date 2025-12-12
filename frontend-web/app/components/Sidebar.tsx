@@ -31,6 +31,9 @@ export default function Sidebar({ role }: Props) {
             <Link href="/reports">📈 التقارير</Link>
           </li>
           <li>
+            <Link href="/dashboard/feedback">🗣️ تحليلات الآراء</Link>
+          </li>
+          <li>
             <Link href="/audit">🛡️ سجل التدقيق</Link>
           </li>
         </ul>
@@ -68,6 +71,9 @@ export default function Sidebar({ role }: Props) {
           </li>
           <li>
             <Link href="/requests/new">✍️ اطلب خدمة</Link>
+          </li>
+          <li>
+            <Link href="/feedback">💬 رأيك يهمنا</Link>
           </li>
         </ul>
       )}
