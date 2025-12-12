@@ -1,19 +1,32 @@
-from sqlalchemy import Column, Integer, Float, String, ForeignKey, DateTime, func
+from sqlalchemy import Column, Integer, String, Float, DateTime, Enum, ForeignKey
 from sqlalchemy.orm import relationship
-
+from datetime import datetime
 from app.db import Base
+import enum
 
+class WalletTransactionType(str, enum.Enum):
+    OFFLINE_CREDIT = "offline_credit"
+    DEBIT = "debit"
+
+class WalletTransactionStatus(str, enum.Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
 
 class Wallet(Base):
     __tablename__ = "wallets"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-
+    user_id = Column(Integer, index=True, unique=True)
     balance = Column(Float, default=0.0)
-    currency = Column(String, default="USD")
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+class WalletTransaction(Base):
+    __tablename__ = "wallet_transactions"
 
-    user = relationship("User", backref="wallet")
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, index=True)
+    amount = Column(Float, nullable=False)
+    type = Column(Enum(WalletTransactionType), nullable=False)
+    status = Column(Enum(WalletTransactionStatus), default=WalletTransactionStatus.PENDING)
+    note = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
