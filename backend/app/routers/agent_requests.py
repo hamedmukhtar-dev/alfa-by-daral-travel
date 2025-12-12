@@ -22,7 +22,8 @@ async def list_agent_requests(
         .where(
             and_(
                 ServiceRequest.status == "pending",
-                ServiceRequest.intent_score.in_(["high", "medium"])
+                ServiceRequest.intent_score.in_(["high", "medium"]),
+                ServiceRequest.claimed_by.is_(None),
             )
         )
         .order_by(
@@ -33,12 +34,11 @@ async def list_agent_requests(
 
     rows = result.scalars().all()
 
-    # Return limited fields (safe)
     return [
         {
             "id": r.id,
-            "category": r.category,
             "title": r.title,
+            "category": r.category,
             "city_from": r.city_from,
             "city_to": r.city_to,
             "price_offer": r.price_offer,
