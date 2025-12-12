@@ -1,18 +1,16 @@
-# ALFA — Unified AI Travel & Services Platform  
-By Dar Al Khartoum Travel & Tourism Co. Ltd (Since 1995)
+# ALFA by Daral Travel — Pilot Live
 
----
+ALFA is a live marketplace platform for travel and local services,
+operating in Pilot Mode.
 
-## 📌 Overview
-ALFA هو نظام خدمات شامل يدمج:
+## Status
+🟢 Live (Pilot)
 
-- السفر: NDC / GDS / LCC
-- الخدمات: طلبات الجمهور Service Requests
-- المحفظة الرقمية Wallet
-- شركات الاتصالات
-- E-Box للشحن الداخلي والدولي
-- الذكاء الاصطناعي OpenAI
+## Key Notes
+- No direct booking
+- No online payments
+- Execution via independent agents and service providers
+- AI features are assistive only (OpenAI compliant)
 
----
-
-## 🏗️ Architecture (Monorepo)
+## Ownership
+© Dar Alkhartoum Travel & Tourism Co. Ltd
