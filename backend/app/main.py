@@ -13,7 +13,8 @@ from app.routers.travel import router as travel_router
 from app.routers.offline_payments import router as offline_payments_router
 from app.routers.reports import router as reports_router
 from app.routers.weekly_report import router as weekly_report_router
-from app.routers.agent_requests import router as agent_requests_router  # 🔥 AGENT VIEW
+from app.routers.agent_requests import router as agent_requests_router
+from app.routers.agent_claim import router as agent_claim_router  # ✅ CLAIM FLOW
 
 from app.db import engine, Base
 
@@ -42,7 +43,8 @@ def create_app() -> FastAPI:
     app.include_router(offline_payments_router)
     app.include_router(reports_router)
     app.include_router(weekly_report_router)   # Weekly ops report
-    app.include_router(agent_requests_router)  # Agent-only view
+    app.include_router(agent_requests_router)  # Agent view
+    app.include_router(agent_claim_router)     # Agent claim (soft lock)
 
     # --------------------
     # System Endpoints
