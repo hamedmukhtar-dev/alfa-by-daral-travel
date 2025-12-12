@@ -34,6 +34,9 @@ export default function Sidebar({ role }: Props) {
             <Link href="/dashboard/feedback">🗣️ تحليلات الآراء</Link>
           </li>
           <li>
+            <Link href="/dashboard/alerts">🚨 التنبيهات</Link>
+          </li>
+          <li>
             <Link href="/audit">🛡️ سجل التدقيق</Link>
           </li>
         </ul>
